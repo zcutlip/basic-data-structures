@@ -17,7 +17,7 @@ adt_status llget_next(LIST list, NODE *node_p, void **data_p);
 /* get a handle on the list's "current" node, and get it's data */
 adt_status llget_current(LIST list, NODE *node_p, void **data_p);
 
-adt_status llremove_node(LIST list, NODE node, void **data_p);
+adt_status llremove_node(LIST list, NODE *node_p, void **data_p);
 adt_status llremove_first(LIST list, void **data_p);
 adt_status llremove_last(LIST list, void **data_p);
 
