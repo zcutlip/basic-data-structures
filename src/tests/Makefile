@@ -37,3 +37,4 @@ clean:
 	-rm -f $(TEST_TEST)
 	-rm -f $(TEST_LIST)
 
+bare: clean

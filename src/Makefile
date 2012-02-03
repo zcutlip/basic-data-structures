@@ -1,4 +1,6 @@
-TRUNK ?= ..
+TRUNK ?= $(PWD)/..
+
+TESTS_DIR = $(PWD)/tests
 
 INCLUDE_PATH = $(TRUNK)/include
 
@@ -28,3 +30,5 @@ clean:
 	-rm -f *.o
 	-rm $(ADT_LIB)
 
+bare: clean
+	$(MAKE) -C $(TESTS_DIR) $@
