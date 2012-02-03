@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "adt_test_data.h"
 #include "adt_list.h"
@@ -39,8 +40,10 @@ int main(void)
     printf("removing data from list.\n");
     for(i=0;i<DATA_COUNT;i++)
     {
+        t_item=test_data->test_items[i];
         status=llremove_last(list,(void **)(&data));
         assert(ADT_OK==status);
+        assert(strncmp(t_item->data,data,ADT_TEST_MAX_STRLEN)==0);
 
     }
 
