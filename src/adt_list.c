@@ -89,7 +89,11 @@ adt_status lladd(LIST list, void *data, int key,NODE* node_p)
     
     list->last=node;
     list->current=node;
-    
+    if(NULL == list->first)
+    {
+       list->first=node; 
+    }
+
     if(NULL != node_p)
     {
         *node_p=node;
