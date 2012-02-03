@@ -35,5 +35,5 @@ $(TEST_TEST): $(TEST_OBJ) $(T_DATA_OBJ)
 clean:
 	-rm -f *.o
 	-rm -f $(TEST_TEST)
-
+	-rm -f $(TEST_LIST)
 
