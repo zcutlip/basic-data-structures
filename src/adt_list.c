@@ -81,18 +81,15 @@ adt_status lladd(LIST list, void *data, int key,NODE* node_p)
     node->next=NULL;
     
     tmp=list->last;
-    if(NULL==tmp)
+    if(NULL!=tmp)
     {
-        status=ADT_INVALID_PARAM;
-        goto end;
+        tmp->next=node;
     }
+    node->previous=tmp;
     
     list->last=node;
     list->current=node;
-    tmp->next=node;
-    node->previous=tmp;
     
-
     if(NULL != node_p)
     {
         *node_p=node;
