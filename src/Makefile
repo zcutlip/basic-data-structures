@@ -1,6 +1,6 @@
 TRUNK ?= $(PWD)/..
 
-TESTS_DIR = $(PWD)/tests
+TESTS_DIR = $(TRUNK)/src/tests
 
 INCLUDE_PATH = $(TRUNK)/include
 
@@ -19,11 +19,16 @@ ADT_LIB=libadt.a
 %.o:%.c
 	$(CC) -c $< $(CFLAGS) -o $@
 
-
-all: lib
-
 lib: $(ADT_LIST_OBJ)
 	$(AR) rcs $(ADT_LIB) $^
+
+all: lib tests
+
+.PHONY: clean tests
+
+tests: lib
+	$(MAKE) -C $(TESTS_DIR) $@
+
 
 
 clean:
