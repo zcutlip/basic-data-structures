@@ -9,6 +9,8 @@ typedef struct node_struct *NODE;
 LIST list_create(void);
 void list_destroy(LIST *list_p);
 
+adt_status lladd(LIST list, void *data, int key,NODE* node_p);
+
 adt_status llget_first(LIST list, NODE *node_p, void **data_p);
 adt_status llget_last(LIST list, NODE *node_p, void **data_p);
 adt_status llget_prev(LIST list, NODE *node_p, void **data_p);
