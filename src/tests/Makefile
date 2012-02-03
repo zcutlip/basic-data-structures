@@ -21,7 +21,9 @@ TESTS=$(TEST_TEST) $(TEST_LIST)
 %.o:%.c
 	$(CC) -c $< $(CFLAGS) -o $@
 
-all:$(TESTS)
+all:tests 
+
+tests: $(TESTS)
 
 
 $(TEST_LIST): $(TEST_LIST_OBJ) $(T_DATA_OBJ)
