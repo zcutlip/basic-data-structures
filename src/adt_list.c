@@ -93,6 +93,8 @@ adt_status lladd(LIST list, void *data, int key,NODE* node_p)
     {
        list->first=node; 
     }
+    
+    list->length++;
 
     if(NULL != node_p)
     {
@@ -105,6 +107,112 @@ end:
     return status;
 
 } //end lladd()
+
+adt_status llinsert_after(LIST list, void *data, int key, NODE *node_p)
+{
+    adt_status status;
+    NODE node;
+    NODE before;
+    NODE after;
+
+    if(NULL == list || NULL==node_p || NULL==*node_p)
+    {
+        status=ADT_INVALID_PARAM;
+        goto end;
+    }
+
+    node=__llnode_create();
+
+    if(NULL==node)
+    {
+        status=ADT_NO_MEM;
+        goto end;
+    }
+    
+    before=*node_p;
+    after=before->next;
+
+    node->key=key;
+    node->data=data;
+    node->next=after;
+    node->previous=before;
+
+    before->next=node;
+    
+    if(NULL != after)
+    {
+        after->previous=node;
+    }
+
+    if(list->last == before)
+    {
+        list->last = node;
+    }
+    
+    list->length++;
+
+    status = ADT_OK;
+end:
+    return status;
+}
+
+adt_status llinsert_before(LIST list, void *data, int key, NODE *node_p)
+{
+    adt_status status;
+    NODE node;
+    NODE before;
+    NODE after;
+
+    if(NULL==list || NULL==node_p || NULL==*node_p)
+    {
+        status=ADT_INVALID_PARAM;
+        goto end;
+    }
+
+    node=__llnode_create();
+    if(NULL==node)
+    {
+        status=ADT_NO_MEM;
+        goto end;
+    }
+
+    after=*node_p;
+    before=after->previous;
+   
+    node->key=key;
+    node->data=data;
+    node->next=after;
+    node->previous=before;
+
+    after->previous=node;
+
+    if(NULL!=before)
+    {
+        before->next=node;
+    }
+
+    if(list->first==after)
+    {
+        list->first=node;
+    }
+
+    list->length++;
+
+    status=ADT_OK;
+end:
+    return status;
+}
+    
+
+adt_status llget_first(LIST list, NODE *node_p, void **data_p)
+{
+    adt_status status;
+
+    if(NULL==list || NULL==node_p)
+    {
+    }
+}
+
 
 adt_status llremove_last(LIST list, void **data_p)
 {
