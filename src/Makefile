@@ -30,8 +30,8 @@ tests: lib
 	$(MAKE) -C $(TESTS_DIR) $@
 
 
-
-clean:
+clean: 
+	make -C $(TESTS_DIR) $@
 	-rm -f *.o
 	-rm $(ADT_LIB)
 
