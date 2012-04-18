@@ -3,6 +3,8 @@ INCLUDE_DIR?=$(TRUNK)/include
 
 CFLAGS += -Wall -Wextra -I$(INCLUDE_DIR)
 
+DEBUG=1
+
 ifeq ($(DEBUG),1)
 	CFLAGS += -g -O0
 endif
