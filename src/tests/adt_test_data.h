@@ -3,6 +3,9 @@
 
 #define ADT_TEST_MAX_STRLEN 1024
 
+#define STARS "*******************************************"
+
+
 typedef struct adt_test_item_struct
 {
     unsigned int number;
