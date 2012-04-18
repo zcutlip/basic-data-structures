@@ -75,8 +75,11 @@ adt_status test_insert_before(adt_test_data *test_data)
 
     LIST list;
     
-    list=setup_and_populate_list(test_data);
-    
+    printf("%s\n",STARS);
+    printf("Testing llinsert_before().\n\n");
+
+    list=setup_and_populate_list_evens(test_data);
+       
     assert(NULL!=list);
 
     data=NULL;
@@ -89,13 +92,13 @@ adt_status test_insert_before(adt_test_data *test_data)
         next_t_item=test_data->test_items[i+1];
         assert(strcmp(next_t_item->data,data)==0);
         
-        status=llinsert_before(list,(void *)t_item->data,t_item->number, &node);
+        status=llinsert_before(list,(void *)(t_item->data),t_item->number, &node);
         assert(ADT_OK==status);
         
-        status=llget_next(list,&node,NULL);
+        status=llget_next(list,&node,(void **)&data);
         assert(ADT_OK==status);
         //skip 2
-        status=llget_next(list,&node,NULL);
+        status=llget_next(list,&node,(void **)&data);
         assert(ADT_OK==status);
     }
     
@@ -116,6 +119,8 @@ adt_status test_insert_before(adt_test_data *test_data)
 
     status=ADT_OK;
     
+    printf("Test successful\n\n");
+    
     return status;
 }
 
@@ -128,6 +133,9 @@ adt_status test_remove_last(adt_test_data *test_data)
     adt_test_item *t_item;
 
     LIST list;
+    
+    printf("%s\n",STARS);
+    printf("Testing llremove_last().\n\n");
 
     list=setup_and_populate_list(test_data);
     data=NULL;
@@ -148,6 +156,8 @@ adt_status test_remove_last(adt_test_data *test_data)
 
     status=ADT_OK;
     
+    printf("Test successful.\n\n");
+
     return status;
 }
 
@@ -159,6 +169,9 @@ adt_status test_remove_first(adt_test_data *test_data)
     adt_test_item *t_item;
     
     LIST list;
+
+    printf("%s\n",STARS);
+    printf("Testing llremove_first()\n\n");
 
     list=setup_and_populate_list(test_data);
     assert(NULL != list);
@@ -179,6 +192,8 @@ adt_status test_remove_first(adt_test_data *test_data)
 
     status=ADT_OK;
     
+    printf("Test successful.\n\n");
+
     return status;
 }
 
@@ -196,10 +211,16 @@ int main(void)
     
     status=test_remove_first(test_data);
     assert(ADT_OK==status);
+    
+    status=test_insert_before(test_data);
+    assert(ADT_OK==status);
+    
+    printf("All tests succesful.\n");
+    printf("%s\n\n",STARS);
 
     printf("destroying test data.\n");
     adt_test_data_destroy(&test_data);
-
+    
     return 0;
 }
 
