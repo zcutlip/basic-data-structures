@@ -89,6 +89,7 @@ adt_status lladd(LIST list, void *data, int key,NODE* node_p)
     
     list->last=node;
     list->current=node;
+
     if(NULL == list->first)
     {
        list->first=node; 
@@ -143,7 +144,8 @@ adt_status llinsert_after(LIST list, void *data, int key, NODE *node_p)
     {
         after->previous=node;
     }
-
+    
+    list->current=node;
     if(list->last == before)
     {
         list->last = node;
@@ -190,7 +192,8 @@ adt_status llinsert_before(LIST list, void *data, int key, NODE *node_p)
     {
         before->next=node;
     }
-
+    
+    list->current=node;
     if(list->first==after)
     {
         list->first=node;
@@ -207,12 +210,118 @@ end:
 adt_status llget_first(LIST list, NODE *node_p, void **data_p)
 {
     adt_status status;
+    NODE node;
 
     if(NULL==list || NULL==node_p)
     {
+        status=ADT_INVALID_PARAM;
+        goto end;
     }
+    
+    node=list->first;
+    list->current=node;
+
+    if(NULL!=node && NULL != data_p)
+    {
+        *data_p = node->data;
+    }
+
+    *node_p=node;
+    
+    
+    status=ADT_OK;
+end:
+    return status;
 }
 
+adt_status llget_last(LIST list, NODE *node_p, void **data_p)
+{
+    adt_status status;
+    NODE node;
+
+    if(NULL==list || NULL == data_p)
+    {
+        status=ADT_INVALID_PARAM;
+        goto end;
+    }
+
+    node=list->last;
+    list->current=node;
+    
+    if(NULL!= node && NULL != data_p)
+    {
+        *data_p=node->data;
+    }
+    
+    *node_p=node;
+
+    status=ADT_OK;
+end:
+    return status;
+}
+
+adt_status llget_next(LIST list, NODE *node_p, void **data_p)
+{
+    adt_status status;
+    NODE node;
+
+
+    node=NULL;
+
+    if(NULL == list || NULL == node_p)
+    {
+        status=ADT_INVALID_PARAM;
+        goto end;
+    }
+
+    if(NULL != list->current && list->current != list->last)
+    {
+        node=list->current->next;
+        list->current=node;
+    }
+    
+    if(NULL != node && NULL != data_p)
+    {
+        *data_p=node->data;
+    }
+
+    *node_p=node;
+    
+    status=ADT_OK;
+end:
+    return status;
+}
+
+adt_status llget_prev(LIST list, NODE *node_p, void **data_p)
+{
+    adt_status status;
+    NODE node;
+
+    node=NULL;
+
+    if(NULL == list || NULL == node_p)
+    {
+        status=ADT_INVALID_PARAM;
+        goto end;
+    }
+
+    if(NULL != list->current && list->current != list->first)
+    {
+        node=list->current->previous;
+        list->current=node;
+    }
+
+    if(NULL != node && NULL != data_p)
+    {
+        *data_p = node->data;
+    }
+
+    *node_p=node;
+    
+    status=ADT_OK;
+end:
+    return status;
+}
 
 adt_status llremove_last(LIST list, void **data_p)
 {
