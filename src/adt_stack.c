@@ -1,4 +1,7 @@
+#include <stdlib.h>
+
 #include "adt_stack.h"
+#include "adt_list.h"
 
 typedef struct stack_struct
 {
@@ -56,7 +59,7 @@ adt_status stack_push(STACK stack, void *data)
         goto end;
     }
     
-    status=lladd(stack,data,0,NULL);
+    status=lladd(stack->list,data,0,NULL);
 
     if(ADT_OK != status)
     {
@@ -79,7 +82,7 @@ adt_status stack_pop(STACK stack, void **data_p)
         goto end;
     }
     
-    if(stack_size <1 )
+    if(stack->size <1 )
     {
         status=ADT_EMPTY;
         *data_p = NULL;
