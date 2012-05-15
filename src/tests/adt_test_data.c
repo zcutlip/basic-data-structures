@@ -87,7 +87,8 @@ static adt_test_item *__test_item_create(int number)
     memset(t_item,0,sizeof(struct adt_test_item_struct));
 
     t_item->number=number;
-    
+    t_item->removed=0;
+
     snprintf(t_item->data,ADT_TEST_MAX_STRLEN,
             "%s: %d",DEFAULT_TEST_STRING,number);
 
