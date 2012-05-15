@@ -12,14 +12,14 @@ ifeq ($(DEBUG),1)
 endif
 
 
-ADT_LIST_OBJ = adt_list.o
+ADT_OBJS = adt_list.o adt_stack.o adt_queue.o
 
 ADT_LIB=libadt.a
 
 %.o:%.c
 	$(CC) -c $< $(CFLAGS) -o $@
 
-lib: $(ADT_LIST_OBJ)
+lib: $(ADT_OBJS)
 	$(AR) rcs $(ADT_LIB) $^
 
 all: lib tests
