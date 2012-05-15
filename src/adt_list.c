@@ -323,6 +323,33 @@ end:
     return status;
 }
 
+adt_status llget_current(LIST list,NODE *node_p, void **data_p)
+{
+    adt_status status;
+    NODE node;
+
+    node=NULL;
+
+    if(NULL==list || NULL == node_p)
+    {
+        status=ADT_INVALID_PARAM;
+        goto end;
+    }
+
+    node=list->current;
+
+    if(NULL != node && NULL != data_p)
+    {
+        *data_p = node->data;
+    }
+
+    *node_p=node;
+    
+    status=ADT_OK;
+end:
+    return status;
+}
+
 adt_status llremove_last(LIST list, void **data_p)
 {
     adt_status status;
@@ -337,8 +364,7 @@ adt_status llremove_last(LIST list, void **data_p)
     node=list->last;
     if(NULL==node)
     {
-        //should an empty list be an error?
-        status=ADT_OK;
+        status=ADT_EMPTY;
         goto end;
     }
 
@@ -381,8 +407,7 @@ adt_status llremove_first(LIST list, void **data_p)
     node=list->first;
     if(NULL==node)
     {
-        //should an empty list be an error?
-        status=ADT_OK;
+        status=ADT_EMPTY;
         goto end;
 
 
@@ -425,6 +450,12 @@ adt_status llremove_node(LIST list, NODE *node_p, void **data_p)
         status=ADT_INVALID_PARAM;
         goto end;
     }
+    
+    if(list->length < 0)
+    {
+        return ADT_EMPTY;
+        goto end;
+    }
 
     if(list->last == *node_p)
     {
@@ -433,17 +464,18 @@ adt_status llremove_node(LIST list, NODE *node_p, void **data_p)
             list->current = (*node_p)->previous;
         }
         list->last = (*node_p)->previous;
-    }
-    
-    if(list->first == *node_p)
+    } else if(list->first == *node_p)
     {
         if(list->current == list->first)
         {
             list->current = (*node_p)->next;
         }
         list->first = (*node_p)->next;
+    }else
+    {
+        list->current=(*node_p)->next;
     }
-
+    
     if(NULL != (*node_p)->next)
     {
         (*node_p)->next->previous=(*node_p)->previous;
@@ -457,7 +489,7 @@ adt_status llremove_node(LIST list, NODE *node_p, void **data_p)
 
     __llnode_destroy(node_p);
     list->length--;
-    
+    status=ADT_OK;
 end:
     return status;
 }
@@ -491,3 +523,4 @@ static void __llnode_destroy(NODE *node_p)
 
     return;
 }
+
