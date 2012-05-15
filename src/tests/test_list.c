@@ -1,6 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "adt_test_data.h"
 #include "adt_list.h"
@@ -12,6 +17,27 @@ typedef enum even_odd {EVENS,ODDS} even_odd_t;
 
 #define CREATE_LIST_EVENS(tdata) setup_and_populate_list_every_other(tdata,EVENS)
 #define CREATE_LIST_ODDS(tdata) setup_and_populate_list_every_other(tdata,ODDS)
+
+adt_status seed_random(void)
+{
+    int fd;
+    long random;
+    fd=open("/dev/random",O_RDONLY);
+    if(fd<0)
+    {
+        return ADT_ERROR;
+    }
+
+    if(read(fd,(void *)&random,sizeof(random)) < sizeof(random))
+    {
+        return ADT_ERROR;
+    }
+    close(fd);
+    srandom(random);
+    
+    return ADT_OK;
+
+}
 
 LIST setup_and_populate_list(adt_test_data *test_data)
 {
@@ -41,7 +67,8 @@ LIST setup_and_populate_list(adt_test_data *test_data)
 
 }
 
-LIST setup_and_populate_list_every_other(adt_test_data *test_data,even_odd_t which)
+LIST
+setup_and_populate_list_every_other(adt_test_data *test_data,even_odd_t which)
 {
     int i;
     LIST list;
@@ -235,6 +262,114 @@ end:
 
 }
 
+adt_status test_remove_node(void)
+{
+    int i;
+    char *data;
+    adt_status status;
+    adt_test_item *t_item;
+    adt_test_data *td1;
+    adt_test_data *td2;
+    NODE node;
+    LIST list;
+
+    printf("%s\n", STARS);
+    printf("Testing llremove_node().\n\n");
+
+    printf("creating test data.\n");
+    td1=adt_test_data_create(DATA_COUNT);
+    td2=adt_test_data_create(DATA_COUNT);
+
+    if(NULL==td1 || NULL==td2)
+    {
+        printf("Failed to generate test data.\n");
+        status=ADT_NO_MEM;
+        goto end;
+    }
+    
+    list=setup_and_populate_list(td1);
+
+    if(NULL==list)
+    {
+        printf("Failed go set up list.\n");
+        status=ADT_NO_MEM;
+        goto end;
+    }
+
+    data=NULL;
+
+    if(ADT_OK != seed_random())
+    {
+        printf("Error seeding random.\n");
+        goto end;
+    }
+    status=llget_first(list,&node,(void **)&data);
+    if(ADT_OK != status)
+    {
+        printf("Error getting first item from list.\n");
+        goto end;
+    }
+    
+    for(i=0;i<DATA_COUNT;i++)
+    {
+        t_item=td2->test_items[i];
+        if((random() % 2) == 0)
+        {
+            status=llremove_node(list,&node,(void **)&data);
+            if(ADT_OK != status)
+            {
+                printf("Error removing node.\n");
+                goto end;
+            }
+            status=llget_current(list,&node,(void **)&data);
+            if(ADT_OK != status)
+            {
+                printf("Error getting current node.\n");
+                goto end;
+            }
+            t_item->removed=1;
+        }else
+        {
+            status=llget_next(list,&node,(void **)&data);
+            if(ADT_OK!=status)
+            {
+                printf("Error getting next node.\n");
+                goto end;
+            }
+        }
+    }
+
+    status=llget_first(list,&node,(void **)&data);
+    for(i=0;i<DATA_COUNT;i++)
+    {
+        assert(ADT_OK==status);
+        t_item=td2->test_items[i];
+        if(1 == t_item->removed)
+        {   
+            continue;
+        }
+        assert(strcmp(t_item->data,data)==0);
+        data=NULL;
+        llget_next(list,&node,(void **)&data);
+    }
+    
+    status=ADT_OK;
+end:
+
+    if(NULL!=list)
+    {
+        while(llremove_first(list,(void **)&data) == ADT_OK)
+        {
+            continue;
+        }
+        list_destroy(&list);
+    }
+    printf("destroying test data.\n\n");
+    adt_test_data_destroy(&td1);
+    adt_test_data_destroy(&td2);
+    return status;
+}
+
 
 adt_status test_remove_last(void)
 {
@@ -356,6 +491,9 @@ int main(void)
     assert(ADT_OK==status);
     
     status=test_insert_after();
+    assert(ADT_OK==status);
+    
+    status=test_remove_node();
     assert(ADT_OK==status);
 
     printf("All tests succesful.\n");
