@@ -6,7 +6,7 @@
 
 typedef struct list_struct
 {
-    int length;
+    size_t length;
     NODE first;
     NODE last;
     NODE current;
@@ -14,7 +14,6 @@ typedef struct list_struct
 
 typedef struct node_struct
 {
-    int key;
     void *data;
     NODE next;
     NODE previous;
@@ -55,7 +54,18 @@ void list_destroy(LIST *list_p)
     return;
 } //end list_destroy()
 
-adt_status lladd(LIST list, void *data, int key,NODE* node_p)
+size_t list_length(LIST list)
+{
+    if(NULL == list)
+    {
+        return 0;
+    }
+    
+    return list->length;
+
+}
+
+adt_status lladd(LIST list, void *data,NODE* node_p)
 {
     adt_status status;
     NODE node;
@@ -76,7 +86,6 @@ adt_status lladd(LIST list, void *data, int key,NODE* node_p)
         goto end;
     }
     
-    node->key=key;
     node->data=data;
     node->next=NULL;
     
@@ -109,7 +118,7 @@ end:
 
 } //end lladd()
 
-adt_status llinsert_after(LIST list, void *data, int key, NODE *node_p)
+adt_status llinsert_after(LIST list, void *data, NODE *node_p)
 {
     adt_status status;
     NODE node;
@@ -133,7 +142,6 @@ adt_status llinsert_after(LIST list, void *data, int key, NODE *node_p)
     before=*node_p;
     after=before->next;
 
-    node->key=key;
     node->data=data;
     node->next=after;
     node->previous=before;
@@ -158,7 +166,7 @@ end:
     return status;
 }
 
-adt_status llinsert_before(LIST list, void *data, int key, NODE *node_p)
+adt_status llinsert_before(LIST list, void *data, NODE *node_p)
 {
     adt_status status;
     NODE node;
@@ -181,7 +189,6 @@ adt_status llinsert_before(LIST list, void *data, int key, NODE *node_p)
     after=*node_p;
     before=after->previous;
    
-    node->key=key;
     node->data=data;
     node->next=after;
     node->previous=before;
@@ -217,7 +224,11 @@ adt_status llget_first(LIST list, NODE *node_p, void **data_p)
         status=ADT_INVALID_PARAM;
         goto end;
     }
-    
+    if(NULL == list->first)
+    {
+        status=ADT_EMPTY;
+        goto end;
+    }
     node=list->first;
     list->current=node;
 
@@ -244,7 +255,12 @@ adt_status llget_last(LIST list, NODE *node_p, void **data_p)
         status=ADT_INVALID_PARAM;
         goto end;
     }
-
+    
+    if(NULL == list->last)
+    {
+        status=ADT_EMPTY;
+        goto end;
+    }
     node=list->last;
     list->current=node;
     
@@ -278,6 +294,10 @@ adt_status llget_next(LIST list, NODE *node_p, void **data_p)
     {
         node=list->current->next;
         list->current=node;
+    }else
+    {
+        status=ADT_END_LIST;
+        goto end;
     }
     
     if(NULL != node && NULL != data_p)
@@ -309,6 +329,10 @@ adt_status llget_prev(LIST list, NODE *node_p, void **data_p)
     {
         node=list->current->previous;
         list->current=node;
+    }else
+    {
+        status = ADT_END_LIST;
+        goto end;
     }
 
     if(NULL != node && NULL != data_p)
@@ -451,7 +475,7 @@ adt_status llremove_node(LIST list, NODE *node_p, void **data_p)
         goto end;
     }
     
-    if(list->length < 0)
+    if(list->length <= 0)
     {
         return ADT_EMPTY;
         goto end;
