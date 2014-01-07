@@ -9,6 +9,7 @@
 typedef struct adt_test_item_struct
 {
     unsigned int number;
+    char key[ADT_TEST_MAX_STRLEN];
     char data[ADT_TEST_MAX_STRLEN];
     int removed;
 } adt_test_item;

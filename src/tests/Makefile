@@ -20,8 +20,9 @@ TEST_TEST=test_test_data
 TEST_LIST=test_list
 TEST_QUEUE=test_queue
 TEST_STACK=test_stack
+TEST_HTABLE=test_hash_table
 
-TESTS=$(TEST_TEST) $(TEST_LIST) $(TEST_STACK) $(TEST_QUEUE)
+TESTS=$(TEST_TEST) $(TEST_LIST) $(TEST_STACK) $(TEST_QUEUE) $(TEST_HTABLE)
 
 %.o:%.c
 	$(CC) -c $< $(CFLAGS) -o $@
@@ -30,6 +31,9 @@ all:tests
 
 tests: $(TESTS)
 
+$(TEST_HTABLE): $(TEST_HTABLE).o $(T_DATA_OBJ) $(TRUNK)/src/$(LIB_ADT)
+	$(CC) $^ $(LDFLAGS) -o $@
+	
 $(TEST_LIST): $(TEST_LIST).o $(T_DATA_OBJ) $(TRUNK)/src/$(LIB_ADT)
 	$(CC) $^ $(LDFLAGS) -o $@
 
@@ -41,6 +45,7 @@ $(TEST_QUEUE): $(TEST_QUEUE).o $(T_DATA_OBJ) $(TRUNK)/src/$(LIB_ADT)
 
 $(TEST_TEST): $(TEST_OBJ) $(T_DATA_OBJ)
 	$(CC) $^ -o $@
+
 
 
 clean:

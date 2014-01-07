@@ -59,7 +59,7 @@ LIST setup_and_populate_list(adt_test_data *test_data)
     for(i=0;i<DATA_COUNT;i++)
     {
         t_item=test_data->test_items[i];
-        status=lladd(list,(void *)t_item->data,t_item->number,&node);
+        status=lladd(list,(void *)t_item->data,&node);
         assert(ADT_OK==status);
 
     }
@@ -100,7 +100,7 @@ setup_and_populate_list_every_other(adt_test_data *test_data,even_odd_t which)
     for(;i<DATA_COUNT;i+=2)
     {
         t_item=test_data->test_items[i];
-        status=lladd(list,(void *)t_item->data,t_item->number,&node);
+        status=lladd(list,(void *)t_item->data,&node);
         assert(ADT_OK==status);
 
     }
@@ -137,9 +137,9 @@ adt_status test_insert_before(void)
     }
 
     list=CREATE_LIST_EVENS(td1);
-       
+    
     assert(NULL!=list);
-
+    printf("Length of list: %lu\n",list_length(list));
     data=NULL;
     status=llget_first(list,&node,(void **)(&data));
     assert(ADT_OK==status);
@@ -150,14 +150,14 @@ adt_status test_insert_before(void)
         next_t_item=td1->test_items[i+1];
         assert(strcmp(next_t_item->data,data)==0);
         
-        status=llinsert_before(list,(void *)(t_item->data),t_item->number, &node);
+        status=llinsert_before(list,(void *)(t_item->data),&node);
         assert(ADT_OK==status);
         
         status=llget_next(list,&node,(void **)&data);
         assert(ADT_OK==status);
         //skip 2
         status=llget_next(list,&node,(void **)&data);
-        assert(ADT_OK==status);
+        assert((ADT_OK==status) || (ADT_END_LIST == status));
     }
     
 
@@ -169,7 +169,7 @@ adt_status test_insert_before(void)
         assert(strcmp(t_item->data,data)==0);
         data=NULL;
     }
-
+    printf("Length of list: %lu\n",list_length(list));
     printf("destroying list.\n");
     list_destroy(&list);
 
@@ -214,7 +214,7 @@ adt_status test_insert_after(void)
     }
     
     list=CREATE_LIST_ODDS(td1);
-    
+    printf("Length of list: %lu\n",list_length(list));
     assert(NULL!=list);
     
     data=NULL;
@@ -227,12 +227,16 @@ adt_status test_insert_after(void)
         next_t_item=td1->test_items[i+1];
         assert(strcmp(t_item->data,data)==0);
 
-        status=llinsert_after(list,(void *)(next_t_item->data),t_item->number,&node);
+        status=llinsert_after(list,(void *)(next_t_item->data),&node);
         assert(ADT_OK==status);
-        
         //skip 1
         status=llget_next(list,&node,(void **)&data);
-        assert(ADT_OK==status);
+        if(ADT_OK != status)
+        {
+            printf("Got status: %d\n",status);
+            printf("Can't get next after inserting %s\n",next_t_item->data);
+        }
+        assert((ADT_OK==status) || (ADT_END_LIST==status));
     }
 
     for(i=0;i<DATA_COUNT;i++)
@@ -243,7 +247,7 @@ adt_status test_insert_after(void)
         assert(strcmp(t_item->data,data)==0);
         data=NULL;
     }
-
+    printf("Length of list: %lu\n",list_length(list));
     printf("destroying list.\n");
     list_destroy(&list);
 
@@ -288,7 +292,7 @@ adt_status test_remove_node(void)
     }
     
     list=setup_and_populate_list(td1);
-
+    printf("Length of list: %lu\n",list_length(list));
     if(NULL==list)
     {
         printf("Failed go set up list.\n");
@@ -331,14 +335,14 @@ adt_status test_remove_node(void)
         }else
         {
             status=llget_next(list,&node,(void **)&data);
-            if(ADT_OK!=status)
+            if(ADT_OK!=status && ADT_END_LIST != status)
             {
                 printf("Error getting next node.\n");
                 goto end;
             }
         }
     }
-
+    printf("Length of list: %lu\n",list_length(list));
     status=llget_first(list,&node,(void **)&data);
     for(i=0;i<DATA_COUNT;i++)
     {
@@ -362,6 +366,7 @@ end:
         {
             continue;
         }
+        printf("Length of list: %lu\n",list_length(list));
         list_destroy(&list);
     }
     printf("destroying test data.\n\n");
@@ -396,6 +401,7 @@ adt_status test_remove_last(void)
         goto end;
     }   
     list=setup_and_populate_list(td1);
+    printf("Length of list: %lu\n",list_length(list));
     data=NULL;
     printf("removing data from list.\n");
     for(i=DATA_COUNT-1;i>=0;i--)
@@ -406,7 +412,8 @@ adt_status test_remove_last(void)
         assert(strcmp(t_item->data,data)==0);
         data=NULL;
     }
-
+    
+    printf("Length of list: %lu\n",list_length(list));
     printf("destroying list.\n");
     list_destroy(&list);
 
@@ -449,6 +456,7 @@ adt_status test_remove_first(void)
     }
 
     list=setup_and_populate_list(td1);
+    printf("Length of list: %lu\n",list_length(list));
     assert(NULL != list);
     data=NULL;
     printf("removing data from list.\n");
@@ -460,7 +468,7 @@ adt_status test_remove_first(void)
         assert(strcmp(t_item->data,data)==0);
         data=NULL;
     }
-
+    printf("Length of list: %lu\n",list_length(list));
     printf("destroying list.\n");
     list_destroy(&list);
     printf("Destroyed list.\n");

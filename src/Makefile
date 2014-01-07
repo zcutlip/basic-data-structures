@@ -12,7 +12,7 @@ ifeq ($(DEBUG),1)
 endif
 
 
-ADT_OBJS = adt_list.o adt_stack.o adt_queue.o
+ADT_OBJS = adt_list.o adt_stack.o adt_queue.o adt_hash.o
 
 ADT_LIB=libadt.a
 

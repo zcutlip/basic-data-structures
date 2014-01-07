@@ -5,6 +5,7 @@
 #include "adt_test_data.h"
 
 #define DEFAULT_TEST_STRING "This is test data item number"
+#define DEFAULT_KEY_STRING  "This is key string number"
 
 static adt_test_item *__test_item_create(int number);
 static void __test_item_destroy(adt_test_item **t_item_p);
@@ -91,6 +92,8 @@ static adt_test_item *__test_item_create(int number)
 
     snprintf(t_item->data,ADT_TEST_MAX_STRLEN,
             "%s: %d",DEFAULT_TEST_STRING,number);
+    snprintf(t_item->key,ADT_TEST_MAX_STRLEN,
+            "%s: %d",DEFAULT_KEY_STRING,number);
 
 end:
     return t_item;
