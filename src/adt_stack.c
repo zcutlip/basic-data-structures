@@ -7,7 +7,7 @@ typedef struct stack_struct
 {
     LIST list;
     int size;
-} stack_t;
+} adt_stack_t;
 
 STACK stack_create(void)
 {
@@ -59,7 +59,7 @@ adt_status stack_push(STACK stack, void *data)
         goto end;
     }
     
-    status=lladd(stack->list,data,0,NULL);
+    status=lladd(stack->list,data,NULL);
 
     if(ADT_OK != status)
     {

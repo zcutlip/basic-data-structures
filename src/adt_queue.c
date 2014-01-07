@@ -64,7 +64,7 @@ adt_status queue_insert(QUEUE queue, void *data)
         goto end;
     }
     
-    status=lladd(queue->list,data,0,NULL);
+    status=lladd(queue->list,data,NULL);
     if(ADT_OK == status)
     {
         queue->size++;
