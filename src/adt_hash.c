@@ -1,7 +1,8 @@
+#include "adt_conditional_includes.h"
+
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+
 
 #include "adt_hash.h"
 #include "adt_list.h"

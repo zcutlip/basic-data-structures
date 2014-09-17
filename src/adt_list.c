@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include "adt_conditional_includes.h"
 #include <string.h>
 
 #include "adt_error.h"
