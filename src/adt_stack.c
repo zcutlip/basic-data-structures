@@ -1,5 +1,6 @@
 #include "adt_conditional_includes.h"
 
+#include "adt_malloc.h"
 #include "adt_stack.h"
 #include "adt_list.h"
 
@@ -13,7 +14,7 @@ STACK stack_create(void)
 {
     STACK stack;
 
-    stack=malloc(sizeof(struct stack_struct));
+    stack=adt_malloc(sizeof(struct stack_struct));
 
     if(NULL == stack)
     {
@@ -23,7 +24,7 @@ STACK stack_create(void)
     stack->list=list_create();
     if(NULL == stack->list)
     {
-        free(stack);
+        adt_free(stack);
         stack=NULL;
         goto end;
     }
@@ -43,7 +44,7 @@ void stack_destroy(STACK *stack_p)
 
     list_destroy(&((*stack_p)->list));
 
-    free(*stack_p);
+    adt_free(*stack_p);
     *stack_p = NULL;
 
     return;

@@ -1,6 +1,7 @@
 #include "adt_conditional_includes.h"
 #include <string.h>
 
+#include "adt_malloc.h"
 #include "adt_error.h"
 #include "adt_list.h"
 
@@ -29,7 +30,7 @@ LIST list_create(void)
 
     list = NULL;
 
-    list = malloc(sizeof(list_t));
+    list = adt_malloc(sizeof(list_t));
 
     if(NULL == list)
     {
@@ -48,7 +49,7 @@ void list_destroy(LIST *list_p)
         return;
     }
 
-    free(*list_p);
+    adt_free(*list_p);
     *list_p = NULL;
     
     return;
@@ -524,7 +525,7 @@ static NODE __llnode_create(void)
 {
     NODE node;
 
-    node=malloc(sizeof(node_t));
+    node=adt_malloc(sizeof(node_t));
     if(NULL==node)
     {
         goto end;
@@ -542,7 +543,7 @@ static void __llnode_destroy(NODE *node_p)
     {
         return;
     }
-    free(*node_p);
+    adt_free(*node_p);
     *node_p=NULL;
 
     return;

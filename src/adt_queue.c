@@ -1,5 +1,6 @@
 #include "adt_conditional_includes.h"
 
+#include "adt_malloc.h"
 #include "adt_queue.h"
 #include "adt_error.h"
 #include "adt_list.h"
@@ -24,7 +25,7 @@ QUEUE queue_create(void)
         return queue;
     }
 
-    queue=malloc(sizeof(struct queue_struct));
+    queue=adt_malloc(sizeof(struct queue_struct));
     if(NULL == queue)
     {
         list_destroy(&list);
@@ -47,7 +48,7 @@ void queue_destroy(QUEUE *queue_p)
 
     list_destroy(&((*queue_p)->list));
 
-    free(*queue_p);
+    adt_free(*queue_p);
 
     *queue_p = NULL;
 

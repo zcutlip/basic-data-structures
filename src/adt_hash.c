@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
-
+#include "adt_malloc.h"
 #include "adt_hash.h"
 #include "adt_list.h"
 #include "adt_error.h"
@@ -70,7 +70,7 @@ void htable_destroy(HTABLE *htable_p)
     {
         list_destroy(&(htable->htable_chains[i]));
     }
-    free(*htable_p);
+    adt_free(*htable_p);
     (*htable_p)=NULL;
     return;
 }
@@ -79,7 +79,7 @@ HTABLE htable_create(size_t size)
 {
     HTABLE htable;
     size_t i;
-    htable=malloc(sizeof(struct htable_struct) + size*sizeof(LIST));
+    htable=adt_malloc(sizeof(struct htable_struct) + size*sizeof(LIST));
     
     if(NULL == htable)
     {
@@ -396,7 +396,7 @@ adt_status htable_lookup(HTABLE htable,
 static HTNODE _htnode_create(void)
 {
     HTNODE htnode;
-    htnode=malloc(sizeof(htnode_t));
+    htnode=adt_malloc(sizeof(htnode_t));
     
     if(NULL==htnode)
     {
@@ -414,7 +414,7 @@ static void _htnode_destroy(HTNODE *htnode_p)
         return;
     }
     
-    free(*htnode_p);
+    adt_free(*htnode_p);
     *htnode_p=NULL;
     return;
 }
