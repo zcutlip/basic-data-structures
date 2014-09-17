@@ -38,8 +38,9 @@ size_t list_length(LIST list);
  *
  * Param: list A handle to the list to which the object should be appended.
  * Param: [in]data Pointer to the object to append to the list.
- * Param: [out]node_p The address of a node pointer which will point to the
- *        list node that is created as a result from the add operation.
+ * Param: [out]node_p Optional: may be NULL. The address of a node pointer
+ *        which will point to the list node that is created as a result from
+ *        the add operation.
  *        
  */
 adt_status lladd(LIST list, void *data,NODE* node_p);
