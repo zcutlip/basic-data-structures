@@ -9,7 +9,8 @@
 #include "adt_error.h"
 #include "htable_primes.h"
 
-typedef uint32_t htable_hash_t;
+typedef uint64_t htable_hash_t;
+typedef uint32_t htable_hash32_t;
 
 typedef struct htnode_struct
 {
@@ -207,6 +208,7 @@ adt_status htable_fast_insert(HTABLE htable,
     LIST list;
     adt_status ret;
     htable_hash_t hash;
+    htable_hash32_t hash32;
     size_t index;
 
     if(NULL == key || NULL == value)
@@ -221,12 +223,13 @@ adt_status htable_fast_insert(HTABLE htable,
         goto end;
     }
     
-    ret=_hash_func(key,key_len,&hash);
+    ret=_hash_func(key,key_len,&hash32);
     if(ADT_OK != ret)
     {
         goto end;
     }
-    htnode->hash=hash;
+    
+    htnode->hash=hash=hash32;
     htnode->key=key;
     htnode->value=value;
     
@@ -249,6 +252,7 @@ adt_status htable_delete(HTABLE htable,
     HTNODE htnode;
     adt_status status;
     htable_hash_t hash;
+    htable_hash32_t hash32;
     size_t index;
     int found=0;
     int end_list=0;
@@ -258,12 +262,12 @@ adt_status htable_delete(HTABLE htable,
         status = ADT_INVALID_PARAM;
         goto end;
     }
-    status=_hash_func(key,key_len,&hash);
+    status=_hash_func(key,key_len,&hash32);
     if(ADT_OK != status)
     {
         goto end;
     }
-    
+    hash=hash32;
     index = _htnode_index(htable,hash);
     
     list=htable->htable_chains[index];
@@ -329,6 +333,7 @@ adt_status htable_lookup(HTABLE htable,
      HTNODE htnode;
      adt_status status;
      htable_hash_t hash;
+     htable_hash32_t hash32;
      size_t index;
      int found=0;
      int end_list=0;
@@ -338,12 +343,12 @@ adt_status htable_lookup(HTABLE htable,
          status = ADT_INVALID_PARAM;
          goto end;
      }
-     status=_hash_func(key,key_len,&hash);
+     status=_hash_func(key,key_len,&hash32);
      if(ADT_OK != status)
      {
          goto end;
      }
-     
+     hash=hash32;
      index = _htnode_index(htable,hash);
      
      list=htable->htable_chains[index];
