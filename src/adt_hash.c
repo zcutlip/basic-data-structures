@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "adt_synchronization.h"
 #include "adt_malloc.h"
 #include "adt_hash.h"
 #include "adt_list.h"
@@ -25,12 +26,14 @@ struct htable_struct
 {
     size_t htable_size;
     LIST htable_chains[0];
+    ADT_LOCK lock;
 };
 
 static adt_status _hash_func(const void *key, size_t key_len, uint32_t *val_p);
 static HTNODE _htnode_create(void);
 static void _htnode_destroy(HTNODE *htnode_p);
 static size_t _htnode_index(HTABLE htable, htable_hash_t hash);
+static adt_status _htable_fast_insert_nolock(HTABLE htable,char *key,size_t key_len,void *value);
 
 adt_status htable_closest_prime(size_t size,size_t *size_p)
 {
@@ -59,11 +62,15 @@ end:
 void htable_destroy(HTABLE *htable_p)
 {
     HTABLE htable;
+    ADT_LOCK lock;
     size_t i;
     if(NULL == htable_p || NULL == (*htable_p))
     {
         return;
     }
+    
+    lock=(*htable_p)->lock;
+    _adt_write_lock(lock);
     
     htable=(*htable_p);
     
@@ -71,8 +78,12 @@ void htable_destroy(HTABLE *htable_p)
     {
         list_destroy(&(htable->htable_chains[i]));
     }
+    (*htable_p)->lock=NULL;
     adt_free(*htable_p);
     (*htable_p)=NULL;
+    _adt_write_unlock(lock);
+    _adt_rw_lock_destroy(&lock);
+    
     return;
 }
 
@@ -99,6 +110,7 @@ HTABLE htable_create(size_t size)
             goto end;
         }
     }
+    htable->lock=_adt_rw_lock_init();
 end:
     return htable;
 }
@@ -122,6 +134,8 @@ adt_status htable_statistics(HTABLE htable,htable_stats **htable_stats_p)
         status=ADT_INVALID_PARAM;
         goto end;
     }
+    
+    _adt_read_lock(htable->lock);
     
     length=0;
     total_lengths=0;
@@ -162,6 +176,7 @@ adt_status htable_statistics(HTABLE htable,htable_stats **htable_stats_p)
     (*htable_stats_p)=&stats;
     
     status = ADT_OK;
+    _adt_read_unlock(htable->lock);
 end:
     return status;
 }
@@ -179,6 +194,8 @@ adt_status htable_safe_insert(HTABLE htable,
         status=ADT_INVALID_PARAM;
         goto end;
     }
+    //TODO Figure out an atomic way to upgrade from read lock to write lock
+    _adt_write_lock(htable->lock);
     
     status=htable_lookup(htable,key,key_len,&temp);
     
@@ -188,13 +205,15 @@ adt_status htable_safe_insert(HTABLE htable,
         break;
     case ADT_OK: /* key's already been inserted. Bail. */
         status=ADT_KEY_EXISTS;
+        _adt_write_unlock(htable->lock);
         goto end;
     default:/* uh oh */
+        _adt_write_unlock(htable->lock);
         goto end;
     }
 
-    status=htable_fast_insert(htable,key,key_len,value);
-    
+    status=_htable_fast_insert_nolock(htable,key,key_len,value);
+    _adt_write_unlock(htable->lock);
 end:
     return status;
 }
@@ -202,7 +221,25 @@ end:
 adt_status htable_fast_insert(HTABLE htable,
                         char *key,
                         size_t key_len,
-                        void *value)
+                              void *value)
+{
+    adt_status ret;
+    if(NULL == htable)
+    {
+        return ADT_INVALID_PARAM;
+    }
+    _adt_write_lock(htable->lock);
+    ret = _htable_fast_insert_nolock(htable, key, key_len, value);
+    _adt_write_unlock(htable->lock);
+    
+    return ret;
+}
+
+static adt_status
+_htable_fast_insert_nolock(HTABLE htable,
+                           char *key,
+                           size_t key_len,
+                           void *value)
 {
     HTNODE htnode;
     LIST list;
@@ -242,6 +279,8 @@ end:
     return ret;
 }
 
+
+
 adt_status htable_delete(HTABLE htable,
                          char *key,
                          size_t key_len,
@@ -257,14 +296,20 @@ adt_status htable_delete(HTABLE htable,
     int found=0;
     int end_list=0;
     
-    if(NULL == key || NULL == value_p)
+    if(NULL == htable || NULL == key || NULL == value_p)
     {
         status = ADT_INVALID_PARAM;
         goto end;
     }
+
+
+    _adt_write_lock(htable->lock);
+    
     status=_hash_func(key,key_len,&hash32);
+
     if(ADT_OK != status)
     {
+        _adt_write_unlock(htable->lock);
         goto end;
     }
     hash=hash32;
@@ -279,9 +324,11 @@ adt_status htable_delete(HTABLE htable,
     case ADT_OK:
         break;
     case ADT_EMPTY:
+        _adt_write_unlock(htable->lock);
         status=ADT_NOT_FOUND;
         goto end;
     default:
+        _adt_write_unlock(htable->lock);
         goto end;
     }
 
@@ -319,6 +366,7 @@ adt_status htable_delete(HTABLE htable,
     {
         status=ADT_NOT_FOUND;
     }
+    _adt_write_unlock(htable->lock);
 end:
     return status;
 }
@@ -338,14 +386,20 @@ adt_status htable_lookup(HTABLE htable,
      int found=0;
      int end_list=0;
      
-     if(NULL == key || NULL == value_p)
+     if(NULL == htable || NULL == key || NULL == value_p)
      {
          status = ADT_INVALID_PARAM;
          goto end;
      }
+
+
+     _adt_read_lock(htable->lock);
+     
      status=_hash_func(key,key_len,&hash32);
+
      if(ADT_OK != status)
      {
+         _adt_read_unlock(htable->lock);
          goto end;
      }
      hash=hash32;
@@ -361,8 +415,10 @@ adt_status htable_lookup(HTABLE htable,
          break;
      case ADT_EMPTY:
          status=ADT_NOT_FOUND;
+         _adt_read_unlock(htable->lock);
          goto end;
      default:
+         _adt_read_unlock(htable->lock);
          goto end;
      }
      
@@ -394,6 +450,7 @@ adt_status htable_lookup(HTABLE htable,
      {
          status=ADT_NOT_FOUND;
      }
+     _adt_read_unlock(htable->lock);
  end:
      return status;
  }
