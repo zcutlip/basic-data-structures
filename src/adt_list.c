@@ -36,7 +36,10 @@ LIST list_create(void)
     {
         goto end;
     }
-    memset(list,0,sizeof(list_t));
+    list->length=0;
+    list->first=NULL;
+    list->last=NULL;
+    list->current=NULL;
     
 end:
     return list;
