@@ -1,10 +1,7 @@
 //
 //  adt_malloc.h
-//  KmemAnalyzer
-//
-//  Created by Zachary Cutlip on 9/17/14.
-//  Copyright (c) 2014 Zachary Cutlip. All rights reserved.
-//
+
+
 
 #ifndef _ADT_MALLOC_H
 #define _ADT_MALLOC_H

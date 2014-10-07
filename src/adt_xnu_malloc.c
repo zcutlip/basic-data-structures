@@ -1,10 +1,3 @@
-//
-//  adt_xnu_malloc.c
-//  KmemAnalyzer
-//
-//  Created by Zachary Cutlip on 9/17/14.
-//  Copyright (c) 2014 Zachary Cutlip. All rights reserved.
-//
 
 
 

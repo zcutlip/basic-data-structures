@@ -1,10 +1,4 @@
-//
-//  adt_xnu_synchronization.c
-//  KmemAnalyzer
-//
-//  Created by Zachary Cutlip on 9/18/14.
-//  Copyright (c) 2014 Zachary Cutlip. All rights reserved.
-//
+
 
 #include "adt_synchronization.h"
 
@@ -89,6 +83,7 @@ adt_status _adt_xnu_write_lock(ADT_LOCK lock)
     lck_rw_lock_exclusive(lock->rw_lock);
     ret=ADT_OK;
 end:
+
     return ret;
 }
 

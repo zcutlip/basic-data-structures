@@ -1,10 +1,3 @@
-//
-//  adt_synchronization.h
-//  KmemAnalyzer
-//
-//  Created by Zachary Cutlip on 9/18/14.
-//  Copyright (c) 2014 Zachary Cutlip. All rights reserved.
-//
 
 #ifndef _ADT_SYNCHRONIZATION_H
 #define _ADT_SYNCHRONIZATION_H
