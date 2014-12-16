@@ -13,6 +13,12 @@ typedef struct node_struct *NODE;
 LIST list_create(void);
 
 /*
+ * Create structures for a synchronized linked list.
+ * Returns: A handle to the list, or NULL if memory allocation fails.
+ */
+LIST list_create_sync(void);
+
+/*
  * Free the memory allocated for linked list, and set the handle to NULL.
  *
  * Note: Memory for the objects stored in the list is not freed.
@@ -24,6 +30,46 @@ LIST list_create(void);
  * Returns: void.
  */
 void list_destroy(LIST *list_p);
+
+
+/*
+ * Free the memory allocated for linked list, and set the handle to NULL.
+ *
+ * Note: Memory for the objects stored in the list is not freed.
+ *       This is the responsibility of the caller.
+ *
+ * Param: [in/out]list_p Pointer to the list that will be freed.
+ *        The handle referenced by this pointer will be set to NULL.
+ *
+ * Returns: void.
+ */
+void list_destroy_sync(LIST *list_p);
+
+/*
+ * Obtain a read-only lock on a synchronized linked list.
+ * 
+ * Param:[in]list The list on which to obtain a read-only lock.
+ * 
+ * Returns: ADT_OK upon successful lock.
+ *          ADT_INVALID_PARAM if the list is null or if it is not synchronized.
+ *          ADT_ERROR on other error.
+ */
+adt_status list_read_lock(LIST list);
+
+
+/*
+ * Release a read-only lock on a synchronized linked list.
+ *
+ * Param: [in]list The list on which to release a read-only lock.
+ *
+ * Returns: ADT_OK upon successful unlock.
+ *          ADT_INVALID_PARAM if the list is null or if it is not synchronized.
+ *          ADT_ERROR on other error.
+ */
+adt_status list_read_unlock(LIST list);
+
+adt_status list_write_lock(LIST list);
+adt_status list_write_unlock(LIST list);
 
 /*
  * Get the number if items stored in the list.

@@ -1,6 +1,7 @@
 #include "adt_conditional_includes.h"
 #include <string.h>
 
+#include "adt_synchronization.h"
 #include "adt_malloc.h"
 #include "adt_error.h"
 #include "adt_list.h"
@@ -8,6 +9,7 @@
 typedef struct list_struct
 {
     size_t length;
+    ADT_LOCK lock;
     NODE first;
     NODE last;
     NODE current;
@@ -40,10 +42,49 @@ LIST list_create(void)
     list->first=NULL;
     list->last=NULL;
     list->current=NULL;
+    list->lock=NULL;
     
 end:
     return list;
 } //end list_create()
+
+LIST list_create_sync(void)
+{
+    LIST list;
+    
+    list = list_create();
+    if(NULL == list)
+    {
+        goto end;
+    }
+    
+    list->lock = _adt_rw_lock_init();
+    if(NULL == (list->lock))
+    {
+        list_destroy(&list);
+        goto end;
+    }
+    
+    
+end:
+    return list;
+}
+
+void list_destroy_sync(LIST *list_p)
+{
+    ADT_LOCK lock;
+    if(NULL == *list_p)
+    {
+        return;
+    }
+    lock = (*list_p)->lock;
+    _adt_write_lock(lock);
+    
+    list_destroy(list_p);
+    _adt_write_unlock(lock);
+    _adt_rw_lock_destroy(&lock);
+    
+}
 
 void list_destroy(LIST *list_p)
 {
@@ -57,6 +98,45 @@ void list_destroy(LIST *list_p)
     
     return;
 } //end list_destroy()
+
+adt_status list_read_lock(LIST list)
+{
+    if(NULL == list || NULL == list->lock)
+    {
+        return ADT_INVALID_PARAM;
+    }
+    
+    return _adt_read_lock(list->lock);
+}
+
+adt_status list_read_unlock(LIST list)
+{
+    if(NULL == list || NULL == list->lock)
+    {
+        return ADT_INVALID_PARAM;
+    }
+    
+    return _adt_read_unlock(list->lock);
+}
+
+adt_status list_write_lock(LIST list)
+{
+    if(NULL == list || NULL == list->lock)
+    {
+        return ADT_INVALID_PARAM;
+    }
+    
+    return _adt_write_lock(list->lock);
+}
+
+adt_status list_write_unlock(LIST list)
+{
+    if(NULL == list || NULL == list->lock)
+    {
+        return ADT_INVALID_PARAM;
+    }
+    return _adt_write_unlock(list->lock);
+}
 
 size_t list_length(LIST list)
 {
@@ -223,7 +303,7 @@ adt_status llget_first(LIST list, NODE *node_p, void **data_p)
     adt_status status;
     NODE node;
 
-    if(NULL==list || NULL==node_p)
+    if(NULL==list)
     {
         status=ADT_INVALID_PARAM;
         goto end;
@@ -240,8 +320,11 @@ adt_status llget_first(LIST list, NODE *node_p, void **data_p)
     {
         *data_p = node->data;
     }
-
-    *node_p=node;
+    
+    if(node_p)
+    {
+        *node_p=node;
+    }
     
     
     status=ADT_OK;
@@ -288,7 +371,7 @@ adt_status llget_next(LIST list, NODE *node_p, void **data_p)
 
     node=NULL;
 
-    if(NULL == list || NULL == node_p)
+    if(NULL == list)
     {
         status=ADT_INVALID_PARAM;
         goto end;
@@ -308,8 +391,11 @@ adt_status llget_next(LIST list, NODE *node_p, void **data_p)
     {
         *data_p=node->data;
     }
-
-    *node_p=node;
+    
+    if(node_p)
+    {
+        *node_p=node;
+    }
     
     status=ADT_OK;
 end:
