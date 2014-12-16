@@ -42,6 +42,60 @@ HTABLE htable_create(size_t htable_size);
  */
 void htable_destroy(HTABLE *htable_p);
 
+
+/*
+ * Obtain a read lock on the hash table.
+ * Note: this is useful for performing a series of read-only operations while keeping
+ * the table in a consistent state. For single operations, there is no need
+ * to lock the table externally. Just set the lock flag when calling the appropriate function.
+ * Param: [in]htable    The htable object on which to obtain a read lock.
+ *
+ * Returns: ADT_OK if the lock operation was successful.
+ *          ADT_INVALID_PARAM if the htable object is NULL.
+ *
+ */
+adt_status htable_read_lock(HTABLE htable);
+
+/*
+ * Release a read lock on the hash table.
+ * Note: this is useful for performing a series of read-only operations while keeping
+ * the table in a consistent state. For single operations, there is no need
+ * to lock the table externally. Just set the lock flag when calling the appropriate function.
+ * Param: [in]htable    The htable object on which to release a read lock.
+ *
+ * Returns: ADT_OK if the unlock operation was successful.
+ *          ADT_INVALID_PARAM if the htable object is NULL.
+ *
+ */
+adt_status htable_read_unlock(HTABLE htable);
+
+/*
+ * Obtain a write lock on the hash table.
+ * Note: this is useful for performing a series of read/write operations while keeping
+ * the table in a consistent state. For single operations, there is no need
+ * to lock the table externally. Just set the lock flag when calling the appropriate function.
+ * Param: [in]htable    The htable object on which to obtain a write lock.
+ *
+ * Returns: ADT_OK if the lock operation was successful.
+ *          ADT_INVALID_PARAM if the htable object is NULL.
+ *
+ */
+adt_status htable_write_lock(HTABLE htable);
+
+/*
+ * Relesae a write lock on the hash table.
+ * Note: this is useful for performing a series of read/write operations while keeping
+ * the table in a consistent state. For single operations, there is no need
+ * to lock the table externally. Just set the lock flag when calling the appropriate function.
+ * Param: [in]htable    The htable object on which to relese a write lock.
+ *
+ * Returns: ADT_OK if the unlock operation was successful.
+ *          ADT_INVALID_PARAM if the htable object is NULL.
+ *
+ */
+adt_status htable_write_lock(HTABLE htable);
+
+
 /*
  *Remove an arbitrary node from the hash table. This function is primarily so that
  *the table may have all its items removed before the table is freed.

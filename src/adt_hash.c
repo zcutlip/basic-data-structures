@@ -119,6 +119,68 @@ end:
     return htable;
 }
 
+adt_status htable_read_lock(HTABLE htable)
+{
+    adt_status ret;
+    
+    
+    if(NULL == htable)
+    {
+        ret = ADT_INVALID_PARAM;
+        goto end;
+    }
+    
+    ret = _adt_read_lock(htable->lock);
+    
+end:
+    return ret;
+}
+
+adt_status htable_read_unlock(HTABLE htable)
+{
+    adt_status ret;
+    if(NULL == htable)
+    {
+        ret = ADT_INVALID_PARAM;
+        goto end;
+    }
+ 
+    ret = _adt_read_unlock(htable->lock);
+end:
+    return ret;
+}
+
+adt_status htable_write_lock(HTABLE htable)
+{
+    adt_status ret;
+    
+    if(NULL == htable)
+    {
+        ret = ADT_INVALID_PARAM;
+        goto end;
+    }
+    
+    ret = _adt_write_lock(htable->lock);
+    
+end:
+    return ret;
+}
+
+adt_status htable_write_unlock(HTABLE htable)
+{
+    adt_status ret;
+    
+    if(NULL == htable)
+    {
+        ret = ADT_INVALID_PARAM;
+        goto end;
+    }
+    
+    ret = _adt_write_unlock(htable->lock);
+end:
+    return ret;
+}
+
 adt_status htable_statistics(HTABLE htable,htable_stats **htable_stats_p)
 {
     static htable_stats stats;
