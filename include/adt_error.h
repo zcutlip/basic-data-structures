@@ -3,6 +3,7 @@
 
 typedef int adt_status;
 
+#define ADT_FULL 5
 #define ADT_KEY_EXISTS 4
 #define ADT_NOT_FOUND 3
 #define ADT_END_LIST 2
