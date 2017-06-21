@@ -1,11 +1,20 @@
 #ifndef _ADT_RING_BUFFER_H
 #define _ADT_RING_BUFFER_H
 
+#include <sys/types.h>
 #include "adt_error.h"
 
 typedef struct ring_buffer_struct *RBUFFER;
 
-RBUFFER rbuffer_create(size_t nitems);
+
+/*
+ * Create structures for a ring buffer.
+ *
+ * Param: rubber_size The maximum capacity, in items, of the ring buffer.
+ *
+ * Returns: A handle to the ring buffer, or NULL if memory allocation failed.
+ */
+RBUFFER rbuffer_create(size_t rbuffer_size);
 
 /*
  * Free the memory allocated for ring buffer, and set the handle to NULL.
@@ -31,9 +40,10 @@ void rbuffer_destroy(RBUFFER *rbuffer_p);
  * Param:   [in/out]rbuffer The ring buffer to insert the item into.
  * Param:   [in]data The data item to insert into the ring buffer.
  * Param:   [out]data_p The address of a void pointer which will point to the
+ * Param: [in]lock       Flag for whether to lock the ring buffer before performing the insert.
  *              object to be retrieved.
  */
-adt_status rbuffer_insert(RBUFFER queue,void *data,void **data_p);
+adt_status rbuffer_insert(RBUFFER queue,void *data,void **data_p, int lock);
 
 /*
  * Remove the oldest item from the ring buffer.
@@ -42,8 +52,9 @@ adt_status rbuffer_insert(RBUFFER queue,void *data,void **data_p);
  * Param:   [in/out]rbuffer The ring buffer to insert the item into.
  * Param:   [out]data_p The address of a void pointer which will point to the
  *              object to be retrieved.
+ * Param: [in]lock       Flag for whether to lock the ring buffer before performing the remove.
  *
  */
-adt_status rbuffer_remove(RBUFFER queue,void **data_p);
+adt_status rbuffer_remove(RBUFFER queue,void **data_p, int lock);
 
 #endif /* _ADT_RING_BUFFER_H */
