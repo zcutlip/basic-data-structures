@@ -5,7 +5,7 @@
 typedef struct adt_lock_t *ADT_LOCK;
 #include "adt_error.h"
 
-#ifdef ADT_XNU
+#if defined(ADT_XNU)
 
 #include "adt_xnu_synchronization.h"
 
@@ -16,7 +16,7 @@ typedef struct adt_lock_t *ADT_LOCK;
 #define _adt_write_unlock(x)    _adt_xnu_write_unlock(x)
 #define _adt_rw_lock_destroy(x) _adt_xnu_rw_lock_destroy(x)
 
-#else
+#elif defined(ADT_POSIX)
 
 #include "adt_posix_synchronizaton.h"
 
@@ -26,6 +26,18 @@ typedef struct adt_lock_t *ADT_LOCK;
 #define _adt_write_lock(x)      _adt_posix_write_lock(x)
 #define _adt_write_unlock(x)    _adt_posix_write_unlock(x)
 #define _adt_rw_lock_destroy(x) _adt_posix_rw_lock_destroy(x)
+
+#else
+
+#define NO_SYNCHRONIZATION
+
+#define _adt_rw_lock_init()     (NULL)
+#define _adt_read_lock(x)       (ADT_ERROR)
+#define _adt_read_unlock(x)     (ADT_ERROR)
+#define _adt_write_lock(x)      (ADT_ERROR)
+#define _adt_write_unlock(x)    (ADT_ERROR)
+#define _adt_rw_lock_destroy(x) 
+
 
 #endif
 

@@ -567,7 +567,7 @@ adt_status llremove_node(LIST list, NODE *node_p, void **data_p)
     
     if(list->length <= 0)
     {
-        return ADT_EMPTY;
+        status = ADT_EMPTY;
         goto end;
     }
 
