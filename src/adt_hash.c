@@ -784,7 +784,7 @@ adt_status htable_remove_item(HTABLE htable,char **key_p, void **data_p,int lock
 {
     adt_status ret;
     LIST list;
-    int i;
+    size_t i;
     int found_item;
     HTNODE htnode;
     
