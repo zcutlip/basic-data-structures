@@ -24,7 +24,7 @@ ADT_OBJS = adt_list.o adt_stack.o adt_queue.o adt_hash.o
 
 ifeq ($(ADT_XNU),1)
 	ADT_OBJS +=adt_xnu_malloc.o adt_xnu_synchronization.o
-	CFLAGS +=-DADT_XNU
+	CFLAGS +=-DADT_XNU -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/Kernel.framework/Headers
 endif
 
 ADT_LIB=libadt.a
