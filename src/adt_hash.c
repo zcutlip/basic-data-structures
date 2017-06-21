@@ -203,9 +203,7 @@ adt_status htable_statistics(HTABLE htable,htable_stats **htable_stats_p)
     
     _adt_read_lock(htable->lock);
     
-    length=0;
     total_lengths=0;
-    average_length=0;
     empty_count=0;
     longest=0;
     shortest=SIZE_MAX;
@@ -903,7 +901,6 @@ static adt_status _hash_func(const void *key, size_t key_len,uint32_t *val_p)
     
     while(ptr!=end_ptr)
     {
-        tmp=0;
         val = (val << 4) + (*ptr);
         
         if((tmp=(val & 0xf0000000)))
