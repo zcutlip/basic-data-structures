@@ -12,6 +12,6 @@ adt_status queue_insert(QUEUE queue,void *data);
 adt_status queue_remove(QUEUE queue,void **data_p);
 adt_status queue_peek(QUEUE queue, void **data_p);
 
-int queue_size(QUEUE queue);
+size_t queue_size(QUEUE queue);
 
 #endif /* _ADT_QUEUE_H */

@@ -8,7 +8,7 @@
 typedef struct queue_struct
 {
     LIST list;
-    int size;
+    size_t size;
 } queue_t;
 
 
@@ -124,7 +124,7 @@ end:
 
 }
 
-int queue_size(QUEUE queue)
+size_t queue_size(QUEUE queue)
 {
     if(NULL == queue)
     {
